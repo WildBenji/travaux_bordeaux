@@ -10,9 +10,7 @@ import folium
 import datetime as dt
 from collections import Counter
 
-import seaborn as sns
 import plotly.express as px
-import plotly.graph_objects as go
 
 import dash
 from dash.dependencies import Input, Output, State
