@@ -52,7 +52,7 @@ def geolocator(_address : str):
 ####################################################################################
 
 
-saved_dataset = pd.read_csv('https://raw.githubusercontent.com/WildBenji/travaux_bordeaux/main/dataset.csv', encoding='utf-8')
+saved_dataset = pd.read_csv('https://raw.githubusercontent.com/WildBenji/travaux_bordeaux/main/dataset.csv', encoding='utf-8') # pd.read_csv('dataset copy.csv', encoding='utf-8') #
 
 check_dataset = saved_dataset[['record_timestamp', 'fields.gid_emprise', 'fields.libelle', 'fields.type_emprise',
 'fields.date_debut','fields.date_fin', 'fields.gid_acte', 'fields.rs_chantier', 'fields.localisation_emprise', 
@@ -101,19 +101,18 @@ if missing_data.empty == False:
 
     complete_df = pd.concat([saved_dataset, missing_data], axis=0, ignore_index=True).fillna(0)
 
-    complete_df['fields.date_fin'] = pd.to_datetime(complete_df['fields.date_fin'])
-    complete_df['fields.date_debut'] = pd.to_datetime(complete_df['fields.date_debut'])
-    complete_df['temps_travaux'] = complete_df['fields.date_fin'] - complete_df['fields.date_debut'] + dt.timedelta(days=1)
+
 
     print(f"Taille du nouveau fichier : {complete_df.shape}")
 
 else:
     complete_df = saved_dataset
-    complete_df['fields.date_fin'] = pd.to_datetime(complete_df['fields.date_fin'])
-    complete_df['fields.date_debut'] = pd.to_datetime(complete_df['fields.date_debut'])
-    #complete_df['temps_travaux'] = complete_df['fields.date_fin'] - complete_df['fields.date_debut'] + dt.timedelta(days=1)
-
     print("Pas de nouvelles données")
+
+complete_df['fields.date_fin'] = pd.to_datetime(complete_df['fields.date_fin'])
+complete_df['fields.date_debut'] = pd.to_datetime(complete_df['fields.date_debut'])
+complete_df['temps_travaux'] = complete_df['fields.date_fin'] - complete_df['fields.date_debut'] + dt.timedelta(days=1)
+
     
 temp_libelle = complete_df['fields.libelle'].str.get_dummies(sep="/")
 temp_type_emprise = complete_df['fields.type_emprise'].str.get_dummies(sep="/")
@@ -162,7 +161,7 @@ def type_travaux_frequence():
 
     fig = px.histogram(all_libelle_count, x="count", y=all_libelle_count.index)
 
-    fig.update_layout(paper_bgcolor="darkgray", title="Types de travaux et leur fréquence", title_x=0.5)
+    fig.update_layout(paper_bgcolor="darkgray", title="Types d'emprise et leur fréquence", title_x=0.5)
 
     fig.update_xaxes(title="")
     fig.update_yaxes(title="", autorange='reversed')
@@ -178,20 +177,25 @@ _length = complete_df[['fields.gid_emprise', 'temps_travaux']].groupby(by='temps
 _length.rename(columns={'fields.gid_emprise' : 'count'}, inplace=True)
 _length.sort_values(by='temps_travaux', ascending=True, inplace=True)
 _length['temps_travaux'] = _length['temps_travaux'].astype('str')
-_length['temps_travaux'] = _length['temps_travaux'].apply(lambda x : x[:-5])
-_length['total'] = _length['temps_travaux'].astype('int') * _length['count'] 
-
+try:
+    _length['temps_travaux'] = _length['temps_travaux'].apply(lambda x : x[:-5]) # [:-23]
+    _length['total'] = _length['temps_travaux'].astype('int') * _length['count'] 
+except:
+    pass
 
 def duree_travaux():
 
+    _length['temps_travaux'] = _length['temps_travaux'].astype('str')
+    _length['temps_travaux'] = _length['temps_travaux'].apply(lambda x : x[:-5]) # [:-23]
     fig = px.histogram(_length, x="count", y='temps_travaux', nbins=20)
-
+    print(_length.dtypes)
     fig.update_layout(paper_bgcolor="darkgray", title="Nombre de chantiers pour une durée donnée", title_x=0.5)
 
     fig.update_xaxes(title="Total travaux")
     fig.update_yaxes(title="Jours de travaux")
     fig.update_traces(hovertemplate="Total <i> %{y} jours </i> = %{x} travaux")
-    fig.update_layout(bargap=0.2)
+    fig.update_layout(bargap=0.2,
+                      yaxis=dict(tickformat="%d"))
 
     return fig
 
