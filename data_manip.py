@@ -173,11 +173,9 @@ def type_travaux_frequence():
 
 _duration = complete_df[['fields.gid_emprise', 'temps_travaux']]
 
-try:
-    _duration['temps_travaux'] = _duration['temps_travaux'].astype('str').apply(lambda x : x[:-23])
-    _duration['temps_travaux'] = _duration['temps_travaux'].astype('int')
-except:
-    pass
+_duration['temps_travaux'] = _duration['temps_travaux'].astype('str').apply(lambda x : x[:-23])
+_duration['temps_travaux'] = _duration['temps_travaux'].astype('int')
+
 
 def duree_travaux():
 
