@@ -43,9 +43,9 @@ def geolocator(_address : str):
     try:
         _latitude = resp_dic["features"][0]['geometry']['coordinates'][0]
         _longitude = resp_dic["features"][0]['geometry']['coordinates'][1]
-        _address = resp_dic["features"][0]['properties']['label'][:-15]
+        new_address = resp_dic["features"][0]['properties']['label'][:-15]
 
-        return [_longitude, _latitude], _address
+        return [_longitude, _latitude], new_address
     except:
         pass
 
