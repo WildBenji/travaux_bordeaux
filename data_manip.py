@@ -43,9 +43,9 @@ def geolocator(_address : str):
     try:
         _latitude = resp_dic["features"][0]['geometry']['coordinates'][0]
         _longitude = resp_dic["features"][0]['geometry']['coordinates'][1]
-        new_address = resp_dic["features"][0]['properties']['label'][:-15]
+        updated_address = resp_dic["features"][0]['properties']['label'][:-15]
 
-        return [_longitude, _latitude], new_address
+        return [_longitude, _latitude], updated_address
     except:
         pass
 
@@ -94,6 +94,7 @@ if missing_data.empty == False:
     missing_data['localisation_split'] = missing_data['localisation_split'].apply(lambda x : address_cleaner(x))
 
     missing_data['geolocalisation'] = ""
+    missing_data['address'] = ""
 
     for i in range(len(missing_data)):
 
@@ -173,7 +174,7 @@ def type_travaux_frequence():
 
 _duration = complete_df[['fields.gid_emprise', 'temps_travaux']]
 
-_duration['temps_travaux'] = _duration['temps_travaux'].astype('str').apply(lambda x : x[:-5])
+_duration['temps_travaux'] = _duration['temps_travaux'].astype('str').apply(lambda x : x[:-23])
 _duration['temps_travaux'] = _duration['temps_travaux'].astype('int')
 
 
@@ -185,6 +186,35 @@ def duree_travaux():
 
     return fig
 
+"""
+_length = complete_df[['fields.gid_emprise', 'temps_travaux']].groupby(by='temps_travaux').count().reset_index()
+_length.rename(columns={'fields.gid_emprise' : 'count'}, inplace=True)
+_length.sort_values(by='temps_travaux', ascending=True, inplace=True)
+_length['temps_travaux'] = _length['temps_travaux'].astype('str')
+try:
+    _length['temps_travaux'] = _length['temps_travaux'].apply(lambda x : x[:-5]) # [:-23]
+    _length['total'] = _length['temps_travaux'].astype('int') * _length['count'] 
+except:
+    pass
+
+
+def duree_travaux():
+
+   # _length['temps_travaux'] = _length['temps_travaux'].astype('str')
+    #_length['temps_travaux'] = _length['temps_travaux'].apply(lambda x : x[:-5]) # [:-23]
+    fig = px.histogram(_length, x="count", y='temps_travaux', nbins=20)
+    print(_length.dtypes)
+    fig.update_layout(paper_bgcolor="darkgray", title="Nombre de chantiers pour une durée donnée", title_x=0.5)
+
+    fig.update_xaxes(title="Total travaux")
+    fig.update_yaxes(title="Jours de travaux")
+    fig.update_traces(hovertemplate="Total <i> %{y} jours </i> = %{x} travaux")
+    fig.update_layout(bargap=0.2,
+                      yaxis=dict(tickformat="%d"))
+
+    return fig
+
+"""
 
 
 
