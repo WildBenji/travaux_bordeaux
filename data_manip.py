@@ -186,35 +186,6 @@ def duree_travaux():
 
     return fig
 
-"""
-_length = complete_df[['fields.gid_emprise', 'temps_travaux']].groupby(by='temps_travaux').count().reset_index()
-_length.rename(columns={'fields.gid_emprise' : 'count'}, inplace=True)
-_length.sort_values(by='temps_travaux', ascending=True, inplace=True)
-_length['temps_travaux'] = _length['temps_travaux'].astype('str')
-try:
-    _length['temps_travaux'] = _length['temps_travaux'].apply(lambda x : x[:-5]) # [:-23]
-    _length['total'] = _length['temps_travaux'].astype('int') * _length['count'] 
-except:
-    pass
-
-
-def duree_travaux():
-
-   # _length['temps_travaux'] = _length['temps_travaux'].astype('str')
-    #_length['temps_travaux'] = _length['temps_travaux'].apply(lambda x : x[:-5]) # [:-23]
-    fig = px.histogram(_length, x="count", y='temps_travaux', nbins=20)
-    print(_length.dtypes)
-    fig.update_layout(paper_bgcolor="darkgray", title="Nombre de chantiers pour une durée donnée", title_x=0.5)
-
-    fig.update_xaxes(title="Total travaux")
-    fig.update_yaxes(title="Jours de travaux")
-    fig.update_traces(hovertemplate="Total <i> %{y} jours </i> = %{x} travaux")
-    fig.update_layout(bargap=0.2,
-                      yaxis=dict(tickformat="%d"))
-
-    return fig
-
-"""
 
 
 
